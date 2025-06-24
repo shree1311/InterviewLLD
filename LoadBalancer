@@ -1,0 +1,170 @@
+/*Features Required:
+
+Request Distribution: The load balancer should distribute incoming requests across multiple servers to balance the load and 
+                        prevent any single server from becoming overloaded.
+Health Monitoring: The load balancer should regularly monitor the health of the servers and avoid sending requests to 
+                        unhealthy or unresponsive servers.
+Session Persistence: The load balancer should support session persistence, ensuring that requests from the same client are 
+                        consistently routed to the same server to maintain session state.
+Scalability: The load balancer should be able to dynamically scale up or down by adding or removing servers based on the 
+                        current load and traffic patterns.
+Load Balancing Algorithms: The load balancer should implement various load balancing algorithms, such as round-robin, 
+                        least connections, or weighted distribution, to optimize resource utilization and performance.
+Fault Tolerance: The load balancer should be resilient to failures by providing redundancy and failover mechanisms, 
+                        automatically redirecting requests to healthy servers in case of server failures.
+Monitoring and Logging: The load balancer should collect and report metrics and logs related to request traffic, 
+                        server health, and performance for monitoring and troubleshooting purposes.
+
+Design Patterns Involved or Used:
+Singleton Pattern: The Singleton pattern can be used to ensure that only one instance of the load balancer is created and 
+                        shared across the system.
+Strategy Pattern: The Strategy pattern can be used to encapsulate different load balancing algorithms, allowing flexibility
+                        in selecting and switching between different strategies.
+Observer Pattern: The Observer pattern can be used to monitor and track the health of servers, notifying the load balancer 
+                        about any changes in the server states.
+Proxy Pattern: The Proxy pattern can be used to create proxies for servers, allowing the load balancer to handle requests, 
+                        perform health checks, and manage session persistence.
+Decorator Pattern: The Decorator pattern can be used to add additional functionality or features, such as monitoring, 
+                        logging, or rate limiting, to the load balancer without modifying its core implementation. */
+
+// Server class
+class Server {
+    private String serverId;
+    private boolean isHealthy;
+    // Other attributes and methods
+
+    public Server(String serverId) {
+        this.serverId = serverId;
+        this.isHealthy = true;
+    }
+
+    public boolean isHealthy() {
+        return isHealthy;
+    }
+
+    public void setHealthy(boolean healthy) {
+        isHealthy = healthy;
+    }
+
+    // Other server operations
+}
+
+// LoadBalancer class (Singleton)
+class LoadBalancer {
+    private static LoadBalancer instance;
+    private List<Server> servers;
+    private LoadBalancingStrategy strategy;
+
+    private LoadBalancer() {
+        this.servers = new ArrayList<>();
+    }
+
+    public static LoadBalancer getInstance() {
+        if (instance == null) {
+            instance = new LoadBalancer();
+        }
+        return instance;
+    }
+
+    public void addServer(Server server) {
+        servers.add(server);
+    }
+
+    public void removeServer(Server server) {
+        servers.remove(server);
+    }
+
+    public Server getServer(Request request) {
+        return strategy.getServer(servers, request);
+    }
+
+    public void setLoadBalancingStrategy(LoadBalancingStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    // Other load balancer operations
+}
+
+// LoadBalancingStrategy interface
+interface LoadBalancingStrategy {
+    Server getServer(List<Server> servers, Request request);
+}
+
+// RoundRobinStrategy class
+class RoundRobinStrategy implements LoadBalancingStrategy {
+    private int currentIndex;
+
+    public RoundRobinStrategy() {
+        this.currentIndex = 0;
+    }
+
+    @Override
+    public Server getServer(List<Server> servers, Request request) {
+        int totalServers = servers.size();
+        if (totalServers == 0) {
+            throw new IllegalStateException("No servers available");
+        }
+        Server server = servers.get(currentIndex);
+        currentIndex = (currentIndex + 1) % totalServers;
+        return server;
+    }
+}
+
+// LeastConnectionsStrategy class
+class LeastConnectionsStrategy implements LoadBalancingStrategy {
+    @Override
+    public Server getServer(List<Server> servers, Request request) {
+        int minConnections = Integer.MAX_VALUE;
+        Server selectedServer = null;
+
+        for (Server server : servers) {
+            if (server.isHealthy()) {
+                int connections = getConnections(server); // Get current connections for the server
+                if (connections < minConnections) {
+                    minConnections = connections;
+                    selectedServer = server;
+                }
+            }
+        }
+
+        if (selectedServer == null) {
+            throw new IllegalStateException("No healthy servers available");
+        }
+        return selectedServer;
+    }
+
+    private int getConnections(Server server) {
+        // Perform logic to get current connections for the server
+        return 0; // Placeholder for connections count
+    }
+}
+
+// Main Class
+public class LoadBalancerApp {
+    public static void main(String[] args) {
+        // Create servers
+        Server server1 = new Server("server1");
+        Server server2 = new Server("server2");
+
+        // Create load balancer
+        LoadBalancer loadBalancer = LoadBalancer.getInstance();
+        loadBalancer.addServer(server1);
+        loadBalancer.addServer(server2);
+
+        // Set load balancing strategy
+        LoadBalancingStrategy roundRobinStrategy = new RoundRobinStrategy();
+        loadBalancer.setLoadBalancingStrategy(roundRobinStrategy);
+
+        // Create requests
+        Request request1 = new Request();
+        Request request2 = new Request();
+
+        // Get server for request1
+        Server selectedServer1 = loadBalancer.getServer(request1);
+        System.out.println("Selected server for request1: " + selectedServer1.getServerId());
+
+        // Get server for request2
+        Server selectedServer2 = loadBalancer.getServer(request2);
+        System.out.println("Selected server for request2: " + selectedServer2.getServerId());
+    }
+}
