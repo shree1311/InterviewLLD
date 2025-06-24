@@ -44,9 +44,8 @@ class Player:
     def get_symbol(self):
         return self.symbol
 
-from board import Board
 
-class Game:
+class Game(Board):
     def __init__(self, player1, player2):
         self.player1 = player1
         self.player2 = player2

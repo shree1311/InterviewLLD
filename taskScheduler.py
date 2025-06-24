@@ -57,22 +57,3 @@ class TaskScheduler:
         self._running = False
         self.worker_thread.join()
         print("Task scheduler stopped.")
-
-# --- Demo ---
-if __name__ == "__main__":
-    scheduler = TaskScheduler()
-
-    task1 = Task(1, "Send daily report")
-    task2 = Task(2, "Backup database")
-    task3 = Task(3, "Clean temporary files")
-
-    try:
-        scheduler.schedule_task(task1, 5)  # Run in 5 seconds
-        scheduler.schedule_task(task2, 2)  # Run in 2 seconds
-        scheduler.schedule_task(task3, 7)  # Run in 7 seconds
-
-        # Keep the main thread alive to see the output
-        print("\nScheduler is running... waiting for tasks to execute.")
-        time.sleep(10)
-    finally:
-        scheduler.stop()

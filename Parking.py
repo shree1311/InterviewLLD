@@ -9,15 +9,11 @@ class Vehicle(ABC):
         self.license_plate = license_plate
         self.type = vehicle_type
 
-    def get_type(self) -> VehicleType:
-        return self.type
-
-
+#each of below class imports same things
 class Truck(Vehicle):
     def __init__(self, license_plate: str):
         super().__init__(license_plate, VehicleType.TRUCK)
 
-#each of below class imports same things
 class Car(Vehicle):
     def __init__(self, license_plate: str):
         super().__init__(license_plate, VehicleType.CAR)
@@ -26,8 +22,6 @@ class Motorcycle(Vehicle):
     def __init__(self, license_plate: str):
         super().__init__(license_plate, VehicleType.MOTORCYCLE)
 
-from vehicle_type import VehicleType
-from vehicle import Vehicle
 
 class ParkingSpot(Vehicle, VehicleType):
     def __init__(self, spot_number: int):
@@ -38,6 +32,8 @@ class ParkingSpot(Vehicle, VehicleType):
     def is_available(self) -> bool:
         return self.parked_vehicle is None
 
+    #add vehicle to parking spot
+    #check if vehicle is the right type for the spot
     def park_vehicle(self, vehicle: Vehicle) -> None:
         if self.is_available() and vehicle.get_type() == self.vehicle_type:
             self.parked_vehicle = vehicle
@@ -52,9 +48,6 @@ class ParkingSpot(Vehicle, VehicleType):
 
     def get_parked_vehicle(self) -> Vehicle:
         return self.parked_vehicle
-
-    def get_spot_number(self) -> int:
-        return self.spot_number
 
 from typing import List
 
@@ -76,15 +69,8 @@ class Level(ParkingSpot, Vehicle):
                 spot.unpark_vehicle()
                 return True
         return False
-
-    def display_availability(self) -> None:
-        print(f"Level {self.floor} Availability:")
-        for spot in self.parking_spots:
-            print(f"Spot {spot.get_spot_number()}: {'Available' if spot.is_available() else 'Occupied'}")
-
+    
 from typing import List
-from level import Level
-from vehicle import Vehicle
 
 class ParkingLot(Level, Vehicle):
     _instance = None
@@ -102,9 +88,6 @@ class ParkingLot(Level, Vehicle):
             ParkingLot()
         return ParkingLot._instance
 
-    def add_level(self, level: Level) -> None:
-        self.levels.append(level)
-
     def park_vehicle(self, vehicle: Vehicle) -> bool:
         for level in self.levels:
             if level.park_vehicle(vehicle):
@@ -116,41 +99,3 @@ class ParkingLot(Level, Vehicle):
             if level.unpark_vehicle(vehicle):
                 return True
         return False
-
-    def display_availability(self) -> None:
-        for level in self.levels:
-            level.display_availability()
-
-
-from parking_lot import ParkingLot
-from level import Level
-from car import Car
-from motorcycle import Motorcycle
-from truck import Truck
-
-class ParkingLotDemo:
-    def run():
-        parking_lot = ParkingLot.get_instance()
-        parking_lot.add_level(Level(1, 100))
-        parking_lot.add_level(Level(2, 80))
-
-        car = Car("ABC123")
-        truck = Truck("XYZ789")
-        motorcycle = Motorcycle("M1234")
-
-        # Park vehicles
-        parking_lot.park_vehicle(car)
-        parking_lot.park_vehicle(truck)
-        parking_lot.park_vehicle(motorcycle)
-
-        # Display availability
-        parking_lot.display_availability()
-
-        # Unpark vehicle
-        parking_lot.unpark_vehicle(motorcycle)
-
-        # Display updated availability
-        parking_lot.display_availability()
-
-if __name__ == "__main__":
-    ParkingLotDemo.run()

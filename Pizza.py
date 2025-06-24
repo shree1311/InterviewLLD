@@ -111,48 +111,13 @@ class Order:
         print(f"Total: ${self.calculate_total():.2f}")
         print("--------------------")
 
-# Step 5: (Optional but good) A Menu class can act as a "Director"
-# to create standard, pre-defined pizzas using the builder.
-class Menu:
-    """Provides recipes for creating standard pizzas."""
-    
-    @staticmethod
-    def create_margherita() -> Pizza:
-        """Creates a classic Margherita pizza."""
-        return Pizza.Builder()\
-                    .with_size(Size.MEDIUM)\
-                    .with_crust(Crust.THIN)\
-                    .add_topping(Topping.TOMATO_SAUCE)\
-                    .add_topping(Topping.EXTRA_CHEESE)\
-                    .add_topping(Topping.BASIL)\
-                    .build()
-
-    @staticmethod
-    def create_pepperoni_feast() -> Pizza:
-        """Creates a pepperoni-heavy pizza."""
-        return Pizza.Builder()\
-                    .with_size(Size.LARGE)\
-                    .with_crust(Crust.HAND_TOSSED)\
-                    .add_topping(Topping.TOMATO_SAUCE)\
-                    .add_topping(Topping.EXTRA_CHEESE)\
-                    .add_topping(Topping.PEPPERONI)\
-                    .build()
-
 # Step 6: The main application ties everything together.
 # This demonstrates how a client would use your classes.
 def main():
     """Main function to simulate placing an order at the pizza shop."""
-    print("Welcome to the Four Bridges Pizzeria LLD!")
-    
     # Create a new order
     order = Order(order_id=101)
     
-    # --- Add a pre-defined pizza from the Menu ---
-    print("\nAdding a Margherita pizza from the menu...")
-    margherita = Menu.create_margherita()
-    order.add_item(margherita)
-    order.print_receipt()
-
     # --- Add a custom-built pizza ---
     print("\nBuilding a custom pizza...")
     custom_pizza = Pizza.Builder()\

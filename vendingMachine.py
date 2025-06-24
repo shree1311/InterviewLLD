@@ -109,20 +109,3 @@ class VendingMachine:
         self.inserted_money = 0.0
         self.selected_item_name = None
         self.set_state(NoMoneyState())
-
-if __name__ == "__main__":
-    machine = VendingMachine()
-    coke = Item("Coke", 1.50)
-    chips = Item("Chips", 1.00)
-
-    machine.load_inventory(coke, 5)
-    machine.load_inventory(chips, 10)
-
-    print("\n--- Buying Coke ---")
-    machine.select_item("Coke")
-    machine.insert_money(1.0)
-    machine.insert_money(0.50)
-
-    print("\n--- Buying Chips ---")
-    machine.select_item("Chips")
-    machine.insert_money(2.00)

@@ -10,10 +10,7 @@ class RoomStatus(Enum):
     BOOKED = "BOOKED"
     OCCUPIED = "OCCUPIED"
 
-from threading import Lock
-from room_status import RoomStatus
-from room_type import RoomType
-class Room:
+class Room(RoomStatus, RoomType):
     def __init__(self, id: str, type: RoomType, price: float):
         self.id = id
         self.type = type
@@ -94,7 +91,6 @@ class Payment(ABC):
     def process_payment(self, amount: float) -> bool:
         pass
 
-from payment import Payment
 class CreditCardPayment(Payment):
     def process_payment(self, amount: float) -> bool:
         # Process credit card payment
@@ -106,14 +102,9 @@ class CashPayment(Payment):
 
 from threading import Lock
 from typing import Dict, Optional
-from guest import Guest
-from datetime import date
-from room import Room, RoomStatus
-from reservation import Reservation, ReservationStatus
-from payment import Payment
 import uuid
 
-class HotelManagementSystem:
+class HotelManagementSystem (Guest, Room, RoomStatus, Reservation, ReservationStatus, Payment):
     _instance = None
 
     def __new__(cls):
